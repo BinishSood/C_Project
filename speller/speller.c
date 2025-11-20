@@ -78,15 +78,27 @@ int main(int argc, char *argv[])
     {
         bool punctuation_break = ispunct((unsigned char) c);
         bool end_of_word = isspace((unsigned char) c) || punctuation_break || c=='\n';
-        // Append character to word
-        if(!end_of_word){
-        word[index] = c;
-        index++;
-        if (isdigit(c))
-            int_in_word = true;
-        else if(!isalpha(c)){
-            special_char_in_word = true;
+
+        // Append character to word when we are still building it
+        if(!end_of_word)
+        {
+            word[index] = c;
+            index++;
+            if (isdigit(c))
+            {
+                int_in_word = true;
+            }
+            else if(!isalpha(c))
+            {
+                special_char_in_word = true;
+            }
         }
+
+        // If we hit a delimiter without having accumulated a word, just mirror the delimiter
+        if (end_of_word && index == 0)
+        {
+            fputc(c, temp);
+            continue;
         }
         // Ignore alphabetical strings too long to be words
         if (index > LENGTH)
@@ -101,7 +113,7 @@ int main(int argc, char *argv[])
         }
 
         // We must have found a whole word
-        else if (index > 0 && end_of_word)
+        else if (end_of_word)
         {
             // Terminate current word
             word[index] = '\0';
@@ -115,8 +127,6 @@ int main(int argc, char *argv[])
             getrusage(RUSAGE_SELF, &after);
             if (int_in_word || special_char_in_word)
                 misspelled = false;
-            if (!misspelled)
-                fputs(strcat(word, punctuation), temp);
 
             // Update benchmark
             time_check += calculate(&before, &after);
@@ -127,8 +137,14 @@ int main(int argc, char *argv[])
                 char **dict = getAllDictionaryWords();
                 char *correct_word = best_match(word, dict, size());
                 printf("%s -> %s\n", word, correct_word);
-                fputs(strcat(correct_word, punctuation), temp);
+                fputs(correct_word, temp);
+                fputs(punctuation, temp);
                 misspellings++;
+            }
+            else
+            {
+                fputs(word, temp);
+                fputs(punctuation, temp);
             }
 
             // Prepare for next word
