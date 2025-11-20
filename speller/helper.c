@@ -2,8 +2,6 @@
 #include<string.h>
 #include<stdlib.h>
 
-#define MAX_DISTANCE_ALLOWED 1
-
 /**
  * edit_distance(a,b)
  * 
@@ -61,8 +59,6 @@ char *best_match(char *target, char **dictionary, int dict_size){
     for (int i = 0; i < dict_size; i++)
     {
         char *word = dictionary[i];
-        // Skip checking if length difference is greater than MAX_DISTANCE_ALLOWED
-        if (abs((int)strlen(word)-(int)strlen(target)>=MAX_DISTANCE_ALLOWED)) continue;
         int d = edit_distance(word, target);
         if (d<shortestDistance){
             shortestDistance=d;
