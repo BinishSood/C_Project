@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <sys/resource.h>
 #include <sys/time.h>
+#include<string.h>
 
 #include "dictionary.h"
 
@@ -53,6 +54,7 @@ int main(int argc, char *argv[])
     // Try to open text
     char *text = (argc == 3) ? argv[2] : argv[1];
     FILE *file = fopen(text, "r");
+    FILE *temp = fopen("temp.txt", "w+");
     if (file == NULL)
     {
         printf("Could not open %s.\n", text);
@@ -61,57 +63,60 @@ int main(int argc, char *argv[])
     }
 
     // Prepare to report misspellings
-    printf("\nMISSPELLED WORDS\n\n");
+    printf("\nCORRECTED WORDS\n\n");
 
     // Prepare to spell-check
     int index = 0, misspellings = 0, words = 0;
+    bool int_in_word = false, special_char_in_word = false;
     char word[LENGTH + 1];
 
     // Spell-check each word in text
     char c;
+    char punctuation[2];
+    punctuation[1] = '\0';
     while (fread(&c, sizeof(char), 1, file))
     {
-        // Allow only alphabetical characters and apostrophes
-        if (isalpha(c) || (c == '\'' && index > 0))
-        {
-            // Append character to word
-            word[index] = c;
-            index++;
-
-            // Ignore alphabetical strings too long to be words
-            if (index > LENGTH)
-            {
-                // Consume remainder of alphabetical string
-                while (fread(&c, sizeof(char), 1, file) && isalpha(c));
-
-                // Prepare for new word
-                index = 0;
-            }
+        bool punctuation_break = ispunct((unsigned char) c);
+        bool end_of_word = isspace((unsigned char) c) || punctuation_break || c=='\n';
+        // Append character to word
+        if(!end_of_word){
+        word[index] = c;
+        index++;
+        if (isdigit(c))
+            int_in_word = true;
+        else if(!isalpha(c)){
+            special_char_in_word = true;
         }
-
-        // Ignore words with numbers (like MS Word can)
-        else if (isdigit(c))
+        }
+        // Ignore alphabetical strings too long to be words
+        if (index > LENGTH)
         {
-            // Consume remainder of alphanumeric string
-            while (fread(&c, sizeof(char), 1, file) && isalnum(c));
+            // Consume remainder of alphabetical string
+            while (fread(&c, sizeof(char), 1, file) && isalpha(c));
 
             // Prepare for new word
             index = 0;
+            int_in_word = false;
+            special_char_in_word = false;
         }
 
         // We must have found a whole word
-        else if (index > 0)
+        else if (index > 0 && end_of_word)
         {
             // Terminate current word
             word[index] = '\0';
-
+            punctuation[0] = c;
             // Update counter
             words++;
-
+            
             // Check word's spelling
             getrusage(RUSAGE_SELF, &before);
             bool misspelled = !check(word);
             getrusage(RUSAGE_SELF, &after);
+            if (int_in_word || special_char_in_word)
+                misspelled = false;
+            if (!misspelled)
+                fputs(strcat(word, punctuation), temp);
 
             // Update benchmark
             time_check += calculate(&before, &after);
@@ -119,12 +124,17 @@ int main(int argc, char *argv[])
             // Print word if misspelled
             if (misspelled)
             {
-                printf("%s\n", word);
+                char **dict = getAllDictionaryWords();
+                char *correct_word = best_match(word, dict, size());
+                printf("%s -> %s\n", word, correct_word);
+                fputs(strcat(correct_word, punctuation), temp);
                 misspellings++;
             }
 
             // Prepare for next word
             index = 0;
+            int_in_word = false;
+            special_char_in_word = false;
         }
     }
 
@@ -139,6 +149,9 @@ int main(int argc, char *argv[])
 
     // Close text
     fclose(file);
+    fclose(temp);
+    remove(text);
+    rename("temp.txt", text);
 
     // Determine dictionary's size
     getrusage(RUSAGE_SELF, &before);

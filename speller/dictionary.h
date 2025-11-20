@@ -15,5 +15,8 @@ unsigned int hash(const char *word);
 bool load(const char *dictionary);
 unsigned int size(void);
 bool unload(void);
+int edit_distance(char *a, char *b);
+char *best_match(char *target, char **dictionary, int dict_size);
+char **getAllDictionaryWords();
 
 #endif // DICTIONARY_H
