@@ -12,7 +12,9 @@
 #include "dictionary.h"
 
 
-// Represents a node in a hash table
+// Represents a node in a hash table.
+// Each node links to the next one, so all the nodes in a bucket
+// form a linked list.
 typedef struct node
 {
     char word[LENGTH + 1];
@@ -68,7 +70,7 @@ unsigned int hash(const char *word)
     while ((c = tolower(*word++)))
     {
         // The core of the algorithm: hash = (hash * 33) + c
-        // Written using bitwise shifts for speed: (hash << 5) + hash = (hash * 32) + hash
+        // Written using bitwise shifts for speed: (hash << 5) + hash = (hash * 32) + hash = (hash * 33)
         hash_value = ((hash_value << 5) + hash_value) + c;
     }
 
@@ -156,4 +158,18 @@ bool unload(void)
 
     // 7. After iterating through all buckets, all memory is freed
     return true;
+}
+
+char **getAllDictionaryWords(){
+    char **dict = malloc(size() * sizeof(char *));
+    size_t index = 0;
+    for (int i = 0; i < N; i++)
+    {
+        node *curr = table[i];
+        while (curr!=NULL){
+            dict[index++] = curr->word;
+            curr = curr->next;
+        }
+    }
+    return dict;
 }
