@@ -159,3 +159,17 @@ bool unload(void)
     // 7. After iterating through all buckets, all memory is freed
     return true;
 }
+
+char **getAllDictionaryWords(){
+    char **dict = malloc(size() * sizeof(char *));
+    size_t index = 0;
+    for (int i = 0; i < N; i++)
+    {
+        node *curr = table[i];
+        while (curr!=NULL){
+            dict[index++] = curr->word;
+            curr = curr->next;
+        }
+    }
+    return dict;
+}
