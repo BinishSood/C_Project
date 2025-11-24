@@ -31,7 +31,7 @@ node *table[N] = {NULL};
 // Global word counter for O(1) size() lookup
 unsigned int word_count = 0;
 
-// Returns true if 'word' is in the dictionary, else false
+// Returns true if word is in the dictionary, else false
 // Case-insensitive
 bool check(const char *word)
 {
@@ -58,8 +58,8 @@ bool check(const char *word)
     return false;
 }
 
-// Hashes 'word' to a number (an index for our hash table)
-// Based on the "djb2" algorithm for good distribution
+// Hashes word to a number (an index for our hash table)
+// Based on the djb2 algorithm for good distribution
 unsigned int hash(const char *word)
 {
     // Start with a prime number
@@ -78,7 +78,7 @@ unsigned int hash(const char *word)
     return hash_value % N;
 }
 
-// Loads the 'dictionary' file into the hash table
+// Loads the dictionary file into the hash table
 // Returns true if successful, else false
 bool load(const char *dictionary)
 {

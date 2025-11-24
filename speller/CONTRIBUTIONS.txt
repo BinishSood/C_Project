@@ -1,0 +1,36 @@
+Team Members : 
+    1. Binish Sood  BC2025022
+    2. Muhammad Raza Khan BC2025065
+    3. Bhaskar Kumar Arya BC2025019
+
+Contribution Details : 
+    1. Binish Sood: 
+        -i wrote the base versions for dictionary.c, makefile and speller.c.
+        -i also wrote dictionary.h.
+        -in dictionary.c, i wrote everything apart from the getAllDictionaryWords function (which was implemented by raza) and i had also written the base version of the hashing function which was later upgraded by bhaskar.
+        -i also implemented the base version of speller.c, handling the file io, calling the functions in dictionary.c and finding in how much time does the function take to execute.
+        -the part of the code handling punctuations and digits appearing in words was handled by raza.
+        -i wrote the base version of the makefile, later modified by raza.
+        -i wrote all of dictionary.h
+    
+    2. Muhammad Raza Khan:
+        - Implemented an algorithm to get the best matching word given a base word and a dictionary using the Levenshtein distance algorithm that utilises Dynamic Programming (DP).
+        - Wrote comments explaining the algorithm and the workings of speller.c
+        - Used that algorithm to correct the spellings of the misspelled words in a given text file by modifying the text file
+        - Cleaned up speller.c's way of handling punctuation and digits appearing in words
+        - Added a helper.c file for all helper functions required in the program that don't fit into any of the other files
+        - Modified the Makefile to include helper.c and added a clear target to it
+        - Added a function to get all the words from the dictionary stored in the hash table (getAllDictionaryWords)
+    
+    3. Bhaskar Kumar Arya:
+
+        - My main contribution was converting a basic hash table implementation into a standard and performant dictionary.
+        - The initial version had a simple summation-based hash function and a small bucket size (N = 5,000), leading to long linked lists and slow lookups due to high collision rates(same hash value for different words ).
+        - I improved this by implementing the djb2 hash algorithm, a fast method that builds a hash value by repeatedly multiplying it by 33 and adding each character.
+          the djb2 algorithm : 
+            it takes a string and converts it into a hash value by repeatedly multiplying it by 33 and adding each character.
+            this mixing process spreads the final hash number more evenly, which greatly reduces collisions.
+            i used bitwise operations to make the hash function faster.(https://www.cse.yorku.ca/~oz/hash.html)
+        - I also increased the table size to 65,536 to keep the linked lists inside each bucket minimal.
+        - This change in algorithm decreased time taken by 3 times from 3 seconds to 1 second in a test.
+        - I added comments explaining the pointer logic, hashing flow, and memory management in dictionary.c.
