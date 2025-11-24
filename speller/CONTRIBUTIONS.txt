@@ -34,3 +34,4 @@ Contribution Details :
         - I also increased the table size to 65,536 to keep the linked lists inside each bucket minimal.
         - This change in algorithm decreased time taken by 3 times from 3 seconds to 1 second in a test.
         - I added comments explaining the pointer logic, hashing flow, and memory management in dictionary.c.
+        - I added the README for our project.
